@@ -9,6 +9,11 @@
     "require": "./mutent-migration.cjs"
   },
   "types": "./mutent-migration.d.ts",
+  "files": [
+    "mutent-migration.cjs",
+    "mutent-migration.mjs",
+    "mutent-migration.d.ts"
+  ],
   "scripts": {
     "build": "rollup -c",
     "lint": "standard --fix **/*.mjs",
