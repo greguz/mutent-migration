@@ -1,0 +1,38 @@
+{
+  "name": "mutent-migration",
+  "version": "0.0.0",
+  "description": "Migration plugin for Mutent",
+  "type": "module",
+  "main": "./mutent-migration.cjs",
+  "exports": {
+    "import": "./mutent-migration.mjs",
+    "require": "./mutent-migration.cjs"
+  },
+  "types": "./mutent-migration.d.ts",
+  "scripts": {
+    "build": "rollup -c",
+    "lint": "standard --fix **/*.js",
+    "test": "c8 -r text -r html -x **/*.spec.mjs ava",
+    "prepublishOnly": "npm run lint && npm run build && npm run test"
+  },
+  "keywords": [
+    "mutent",
+    "migration",
+    "migrate",
+    "versioning",
+    "version",
+    "entity"
+  ],
+  "author": "Giacomo Gregoletto",
+  "license": "MIT",
+  "peerDependencies": {
+    "mutent": "5.0.0-9"
+  },
+  "devDependencies": {
+    "ava": "4.0.0-alpha.2",
+    "c8": "^7.10.0",
+    "mutent": "5.0.0-9",
+    "rollup": "^2.58.0",
+    "standard": "^16.0.4"
+  }
+}
