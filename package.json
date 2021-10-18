@@ -11,7 +11,7 @@
   "types": "./mutent-migration.d.ts",
   "scripts": {
     "build": "rollup -c",
-    "lint": "standard --fix **/*.js",
+    "lint": "standard --fix **/*.mjs",
     "test": "c8 -r text -r html -x **/*.spec.mjs ava",
     "prepublishOnly": "npm run lint && npm run build && npm run test"
   },
