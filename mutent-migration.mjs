@@ -1,93 +1,112 @@
 import { MutentError } from 'mutent'
 
-function isVersion (value) {
-  return Number.isInteger(value) && value >= 0
-}
-
-async function migrate (migration, data, context) {
-  let version = Object(data)[migration.key] || 0
-  if (!isVersion(version)) {
-    throw new MutentError(
-      'EMUT_INVALID_ENTITY_VERSION',
-      'Current entity has an invalid version',
-      {
-        store: context.store,
-        intent: context.intent,
-        argument: context.argument,
-        migration,
-        data
-      }
-    )
-  }
-
-  if (version > migration.version) {
-    throw new MutentError(
-      'EMUT_FUTURE_ENTITY',
-      'Current entity has a future version',
-      {
-        store: context.store,
-        intent: context.intent,
-        argument: context.argument,
-        migration,
-        data
-      }
-    )
-  }
-
-  while (version < migration.version) {
-    version++
-
-    const strategy = migration.strategies[version]
-    if (!strategy) {
-      throw new MutentError(
-        'EMUT_EXPECTED_STRATEGY',
-        `Expected migration strategy #${version}`,
-        {
-          store: context.store,
-          intent: context.intent,
-          argument: context.argument,
-          migration,
-          data
-        }
-      )
-    }
-
-    data = await strategy(data)
-    if (Object(data)[migration.key] !== version) {
-      throw new MutentError(
-        'EMUT_INVALID_UPGRADE',
-        `Migration strategy #${version} upgrade version mismatch`,
-        {
-          store: context.store,
-          intent: context.intent,
-          argument: context.argument,
-          migration,
-          data
-        }
-      )
+export function mutentMigration (options) {
+  return {
+    hooks: {
+      onEntity: onEntityHook.bind(null, parseOptions(options))
     }
   }
-
-  return data
 }
 
-export function mutentMigration ({ key = 'v', strategies = {}, version = 0 }) {
+function parseOptions (options) {
+  const {
+    forceUpdate,
+    key = 'v',
+    strategies,
+    version
+  } = Object(options)
+  if (typeof key !== 'string' && typeof key !== 'symbol') {
+    throw new TypeError()
+  }
   if (!isVersion(version)) {
     throw new TypeError('Target version must be a positive integer or zero')
   }
-  if (typeof key !== 'string') {
-    throw new TypeError('Version key must be a string')
-  }
-  const migration = {
+  return {
+    forceUpdate: !!forceUpdate,
     key,
     strategies: Object(strategies),
     version
   }
-  return {
-    hooks: {
-      async onEntity (entity, context) {
-        entity.set(await migrate(migration, entity.valueOf(), context))
+}
+
+function isVersion (value) {
+  return Number.isInteger(value) && value >= 0
+}
+
+/**
+ * TODO: use Mutent's exported function (future versions)
+ */
+function getAdapterName (adapter) {
+  return typeof adapter === 'object' && adapter !== null
+    ? adapter[Symbol.for('adapter-name')] || adapter.constructor.name
+    : 'Unknown Adapter'
+}
+
+async function onEntityHook (
+  { forceUpdate, key, strategies, version },
+  entity,
+  ctx
+) {
+  // Current Entity data
+  let data = entity.valueOf()
+
+  // Current Entity version
+  let v = Object(data)[key] || 0
+
+  if (!isVersion(v)) {
+    throw new MutentError(
+      'EMUT_INVALID_ENTITY_VERSION',
+      'Current entity has an invalid version',
+      {
+        adapter: getAdapterName(ctx.adapter),
+        data
       }
+    )
+  }
+
+  if (v > version) {
+    throw new MutentError(
+      'EMUT_FUTURE_ENTITY',
+      'Current entity has a future version',
+      {
+        adapter: getAdapterName(ctx.adapter),
+        data
+      }
+    )
+  }
+
+  while (v < version) {
+    const fn = strategies[++v]
+
+    if (typeof fn !== 'function') {
+      throw new MutentError(
+        'EMUT_STRATEGY_EXPECTED',
+        `Expected migration strategy #${version}`,
+        {
+          adapter: getAdapterName(ctx.adapter),
+          data,
+          version: v
+        }
+      )
+    }
+
+    data = await fn(data, ctx)
+
+    if (Object(data)[key] !== v) {
+      throw new MutentError(
+        'EMUT_INVALID_UPGRADE',
+        `Migration strategy #${version} upgrade version mismatch`,
+        {
+          adapter: getAdapterName(ctx.adapter),
+          data
+        }
+      )
+    }
+
+    if (forceUpdate) {
+      entity.update(data)
+    } else {
+      entity.set(data)
     }
   }
 }

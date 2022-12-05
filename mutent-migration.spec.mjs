@@ -1,5 +1,4 @@
 import test from 'ava'
-
 import { Store } from 'mutent'
 
 import { mutentMigration } from './mutent-migration.mjs'
@@ -85,7 +84,7 @@ test('migration:errors', async t => {
 
   await t.throwsAsync(
     store.create({ _v: 1 }).unwrap(),
-    { code: 'EMUT_EXPECTED_STRATEGY' }
+    { code: 'EMUT_STRATEGY_EXPECTED' }
   )
 
   await t.throwsAsync(
