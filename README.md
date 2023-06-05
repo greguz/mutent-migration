@@ -12,6 +12,7 @@ This plugin for [Mutent](https://github.com/greguz/mutent) provides an easy way 
 Returns a new Mutent's Plugin that will monitor all fetched Entites and applies the correct migration strategy when needed.
 
 - `options` `<Object>` 
+- `[options.explicitVersion]` `<boolean>` Do not set the latest version automatically during Entities' creation.
 - `[options.forceUpdate]` `<boolean>` Force Entity's update any time is handled.
 - `[options.key]` `<string>` Name of the key that holds the Entity's version number.
 - `[options.strategies]` `<Object>` Collection of migration functions.
@@ -43,7 +44,7 @@ A strategy was applied to an Entity, but the Entity does not contain the expecte
 ```javascript
 import { Store } from 'mutent'
 import { ArrayAdapter } from 'mutent-array'
-import { mutentMigration } from './mutent-migration.mjs'
+import { mutentMigration } from 'mutent-migration'
 
 const items = [
   { id: 1, oldFieldName: 'Calvin' } // implicit "v: 0"
@@ -73,11 +74,17 @@ const store = new Store({
 })
 
 async function foo () {
+  // Read and upgrade (in memory)
   const calvin = await store.find(item => item.id === 1).unwrap()
   console.log(calvin) // { id: 1, v: 1, newFieldname: 'Calvin' }
 
-  const hobbes = await store.create({ id: 2, oldFieldName: 'Hobbes' }).unwrap()
+  // Create (set latest version if not defined during creation only)
+  const hobbes = await store.create({ id: 2, newFieldname: 'Hobbes' }).unwrap()
   console.log(hobbes) // { id: 2, v: 1, newFieldname: 'Hobbes' }
+
+  // Create from an explicit version
+  const prof = await store.create({ id: 3, v: 0, oldFieldName: 'Miss Wormwood' }).unwrap()
+  console.log(prof) // { id: 3, v: 1, newFieldname: 'Miss Wormwood' }
 }
 
 foo()

@@ -2,6 +2,17 @@
 
 import { Context, Generics, PluginOptions } from "mutent";
 
+declare module "mutent" {
+  interface PluginOptions<G extends Generics> {
+    /**
+     * Disable `mutent-migration` plugin behaviour.
+     *
+     * @default false
+     */
+    skipMigration?: boolean;
+  }
+}
+
 export interface MigrationOptions<G extends Generics> {
   /**
    * Current Entity version (revision). Must be zero or positive integer.

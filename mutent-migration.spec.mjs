@@ -124,3 +124,34 @@ test('migration:init', async t => {
     value: 16
   })
 })
+
+test('migration:skip', async t => {
+  t.plan(4)
+
+  const store = createStore({
+    version: 1,
+    strategies: {
+      1: obj => {
+        t.pass()
+        return { ...obj, v: 1, value: obj.value * 2 }
+      }
+    }
+  })
+
+  const inserted = await store.create({ v: 0, value: 21 }).unwrap({
+    mutent: {
+      skipMigration: true
+    }
+  })
+  t.like(inserted, { v: 0, value: 21 })
+
+  const withPlugin = await store.read(() => true).unwrap()
+  t.like(withPlugin, { v: 1, value: 42 })
+
+  const withoutPlugin = await store.read(() => true).unwrap({
+    mutent: {
+      skipMigration: true
+    }
+  })
+  t.like(withoutPlugin, { v: 0, value: 21 })
+})

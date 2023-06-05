@@ -49,6 +49,11 @@ async function onEntityHook (
   entity,
   ctx
 ) {
+  if (Object(Object(ctx.options).mutent).skipMigration === true) {
+    // Support "disable this plugin" option flag
+    return
+  }
+
   // Get current Entity data representation
   let data = Object(entity.valueOf())
 
