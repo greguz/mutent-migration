@@ -4,17 +4,17 @@ import { Context, Generics, PluginOptions } from "mutent";
 
 export interface MigrationOptions<G extends Generics> {
   /**
-   * Required version.
+   * Current Entity version (revision). Must be zero or positive integer.
    */
   version: number;
   /**
-   * Version property name.
+   * The name of the property the contains the Entity's version value.
    *
    * @default "v"
    */
   key?: string | symbol;
   /**
-   * Migration strategies.
+   * Functions that perform migration from a version to another one.
    *
    * @default {}
    */
@@ -26,6 +26,12 @@ export interface MigrationOptions<G extends Generics> {
    * @default false
    */
   forceUpdate?: boolean;
+  /**
+   * Do not set the latest version automatically during Entities' creation.
+   *
+   * @default false
+   */
+  explicitVersion?: boolean;
 }
 
 export declare type MigrationStrategy<G extends Generics> = (

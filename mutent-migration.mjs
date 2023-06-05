@@ -10,18 +10,20 @@ export function mutentMigration (options) {
 
 function parseOptions (options) {
   const {
+    explicitVersion,
     forceUpdate,
     key = 'v',
     strategies,
     version
   } = Object(options)
   if (typeof key !== 'string' && typeof key !== 'symbol') {
-    throw new TypeError()
+    throw new TypeError('Version key must be a string or Symbol')
   }
   if (!isVersion(version)) {
     throw new TypeError('Target version must be a positive integer or zero')
   }
   return {
+    explicitVersion: !!explicitVersion,
     forceUpdate: !!forceUpdate,
     key,
     strategies: Object(strategies),
@@ -43,15 +45,24 @@ function getAdapterName (adapter) {
 }
 
 async function onEntityHook (
-  { forceUpdate, key, strategies, version },
+  { explicitVersion, forceUpdate, key, strategies, version },
   entity,
   ctx
 ) {
-  // Current Entity data
-  let data = entity.valueOf()
+  // Get current Entity data representation
+  let data = Object(entity.valueOf())
+
+  // Set lastest version if the Entity was created
+  if (
+    !explicitVersion &&
+    ctx.intent === 'CREATE' &&
+    data[key] === undefined
+  ) {
+    data[key] = version
+  }
 
   // Current Entity version
-  let v = Object(data)[key] || 0
+  let v = data[key] || 0
 
   if (!isVersion(v)) {
     throw new MutentError(

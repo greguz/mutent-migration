@@ -54,6 +54,7 @@ test('migration:upgrade', async t => {
   }
 
   const store = createStore({
+    explicitVersion: true,
     strategies,
     version: 3
   })
@@ -101,4 +102,25 @@ test('migration:errors', async t => {
     store.create({ _v: 0 }).unwrap(),
     { code: 'EMUT_INVALID_UPGRADE' }
   )
+})
+
+test('migration:init', async t => {
+  const store = createStore({
+    version: 1,
+    strategies: {
+      1: obj => ({ ...obj, v: 1, value: obj.value * 2 })
+    }
+  })
+
+  const a = await store.create({ value: 42 }).unwrap()
+  t.like(a, {
+    v: 1,
+    value: 42
+  })
+
+  const b = await store.from({ value: 8 }).unwrap()
+  t.like(b, {
+    v: 1,
+    value: 16
+  })
 })
