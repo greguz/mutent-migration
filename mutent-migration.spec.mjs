@@ -155,3 +155,27 @@ test('migration:skip', async t => {
   })
   t.like(withoutPlugin, { v: 0, value: 21 })
 })
+
+test('set default version with ensure mutator', async t => {
+  t.plan(1)
+
+  const store = createStore({
+    version: 1,
+    strategies: {
+      1: () => {
+        t.fail()
+        throw new Error('Should be skipped')
+      }
+    }
+  })
+
+  const obj = await store
+    .from(null)
+    .ensure({ id: 42 })
+    .unwrap()
+
+  t.deepEqual(obj, {
+    id: 42,
+    v: 1
+  })
+})

@@ -32,7 +32,7 @@ export interface MigrationOptions<G extends Generics> {
   strategies?: Record<number | string, MigrationStrategy<G>>;
   /**
    * Force Entity's update any time is handled.
-   * By the default the migration is performed in-memory until the first write (commit) is performed.
+   * By the default the migration is only performed in-memory until the first write (commit).
    *
    * @default false
    */

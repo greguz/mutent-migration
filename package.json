@@ -35,10 +35,10 @@
     "mutent": "^5.0.0"
   },
   "devDependencies": {
-    "ava": "^5.3.0",
-    "c8": "^7.14.0",
-    "mutent": "^5.0.1",
-    "rollup": "^3.23.1",
+    "ava": "^5.3.1",
+    "c8": "^8.0.1",
+    "mutent": "^5.1.0",
+    "rollup": "^4.3.0",
     "standard": "^17.1.0"
   },
   "repository": {

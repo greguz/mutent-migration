@@ -1,4 +1,4 @@
-import { MutentError } from 'mutent'
+import { MutentError, getAdapterName } from 'mutent'
 
 export function mutentMigration (options) {
   return {
@@ -35,15 +35,6 @@ function isVersion (value) {
   return Number.isInteger(value) && value >= 0
 }
 
-/**
- * TODO: use Mutent's exported function (future versions)
- */
-function getAdapterName (adapter) {
-  return typeof adapter === 'object' && adapter !== null
-    ? adapter[Symbol.for('adapter-name')] || adapter.constructor.name
-    : 'Unknown Adapter'
-}
-
 async function onEntityHook (
   { explicitVersion, forceUpdate, key, strategies, version },
   entity,
@@ -58,11 +49,7 @@ async function onEntityHook (
   let data = Object(entity.valueOf())
 
   // Set lastest version if the Entity was created
-  if (
-    !explicitVersion &&
-    ctx.intent === 'CREATE' &&
-    data[key] === undefined
-  ) {
+  if (!explicitVersion && entity.created && data[key] === undefined) {
     data[key] = version
   }
 
