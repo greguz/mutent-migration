@@ -1,6 +1,6 @@
 import { MutentError, getAdapterName } from 'mutent'
 
-export function mutentMigration (options) {
+export default function mutentMigration (options) {
   return {
     hooks: {
       onEntity: onEntityHook.bind(null, parseOptions(options))

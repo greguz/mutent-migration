@@ -50,6 +50,8 @@ export declare type MigrationStrategy<G extends Generics> = (
   ctx: Context<G>
 ) => any;
 
-export declare function mutentMigration<G extends Generics>(
+declare function mutentMigration<G extends Generics>(
   options: MigrationOptions<G>
 ): PluginOptions<G>;
+
+export default mutentMigration

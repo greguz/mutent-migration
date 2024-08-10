@@ -1,7 +1,7 @@
 import test from 'ava'
 import { Store } from 'mutent'
 
-import { mutentMigration } from './mutent-migration.mjs'
+import migration from './mutent-migration.mjs'
 
 function createStore (options) {
   const items = []
@@ -32,7 +32,7 @@ function createStore (options) {
       }
     },
     plugins: [
-      mutentMigration(options)
+      migration(options)
     ]
   })
 }
