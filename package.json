@@ -18,7 +18,7 @@
   "scripts": {
     "build": "rollup -c",
     "lint": "standard",
-    "test": "c8 -r text -r html -x **/*.spec.mjs ava",
+    "test": "c8 -r text -r html -r lcov -x **/*.spec.mjs ava",
     "prepublishOnly": "npm run lint && npm run build && npm run test"
   },
   "keywords": [

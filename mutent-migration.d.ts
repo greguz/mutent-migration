@@ -1,6 +1,6 @@
 /// <reference types="mutent" />
 
-import { Context, Generics, PluginOptions } from "mutent";
+import type { Context, Generics, MutentOptions } from "mutent";
 
 declare module "mutent" {
   interface PluginOptions<G extends Generics> {
@@ -52,6 +52,6 @@ export declare type MigrationStrategy<G extends Generics> = (
 
 declare function mutentMigration<G extends Generics>(
   options: MigrationOptions<G>
-): PluginOptions<G>;
+): MutentOptions<G>;
 
-export default mutentMigration
+export default mutentMigration;

@@ -2,6 +2,7 @@
 
 [![npm](https://img.shields.io/npm/v/mutent-migration)](https://www.npmjs.com/package/mutent-migration)
 [![JavaScript Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg)](https://standardjs.com)
+[![ci](https://github.com/greguz/mutent-migration/actions/workflows/ci.yaml/badge.svg?branch=master)](https://github.com/greguz/mutent-migration/actions/workflows/ci.yaml)
 
 This plugin for [Mutent](https://github.com/greguz/mutent) provides an easy way to declare migration strategies for data versioning.
 
